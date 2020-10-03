@@ -112,7 +112,82 @@ bool ExpressionManager::isBalanced(string expression){
 
 string ExpressionManager::postfixToInfix(string postfixExpression){
 	cout << "postfixToInfix: " << postfixExpression << endl;
-	return "REPLACE";
+    vector <string> parsed = parseTokens(postfixExpression);
+    stack <string> stackC;
+    string finalExpression = "";
+
+    for (int i = 0; i < (parsed.size()); i++) {
+        string parsedString = parsed[i];
+        int n = parsedString.length();
+        string S_IntwOperator;
+
+
+        char char_array[n+1];
+        strcpy(char_array,parsedString.c_str());
+
+        if(isdigit(char_array[0])){
+//int convertedInteger = convertToInt(char_array[0]);
+        //if char_array[0] {parsed[i]} is integer, then push parsed[i] since that's the string
+                stackC.push(parsed[i]);
+        }
+        else if (isOperator(char_array[0])) {
+            string rightSide;
+            string leftSide;
+
+            if (!stackC.empty()){
+                rightSide = stackC.top();
+                    stackC.pop();
+            }
+            else {
+                return "error";
+            }
+            if (!stackC.empty()){
+                leftSide = stackC.top();
+                    stackC.pop();
+            }
+            else {
+                return "error";
+            }
+        //now we need the operator placed in between
+
+            if (char_array[0] == '+'){
+                cout << "inside charInt == '+'" << endl;
+                S_IntwOperator = "( " + leftSide + " + " + rightSide + " )";
+                stackC.push(S_IntwOperator);
+            }
+            else if (char_array[0] == '-'){
+                cout << "inside charInt == '-'" << endl;
+                S_IntwOperator = "( " + leftSide + " - " + rightSide + " )";
+                stackC.push(S_IntwOperator);
+            }
+            else if (char_array[0] == '*'){
+                cout << "inside charInt == '*'" << endl;
+                S_IntwOperator = "( " + leftSide + " * " + rightSide + " )";
+                stackC.push(S_IntwOperator);
+            }
+            else if (char_array[0] == '/'){
+                cout << "inside charInt == '/'" << endl;
+                S_IntwOperator = "( " + leftSide + " / " + rightSide + " )";
+                stackC.push(S_IntwOperator);
+            }
+            else if (char_array[0] == '%'){
+                cout << "inside charInt == '%'" << endl;
+                S_IntwOperator = "( " + leftSide + " % " + rightSide + " )";
+                stackC.push(S_IntwOperator);
+            }
+            else {
+                return "error";
+            }
+        }
+    }
+
+        if (stackC.size() == 1) {
+            finalExpression = stackC.top();
+        }
+        else {
+            return "error";
+        }
+	return finalExpression;
 }
 
 int ExpressionManager::convertToInt(string token) {
