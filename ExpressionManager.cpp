@@ -122,10 +122,6 @@ int ExpressionManager::convertToInt(string token) {
     return convertedInt;
 }
 
-char ExpressionManager::convertThistoChar(string token) {
-
-}
-
 bool ExpressionManager::isOperator(char token) {
                 cout << "inside the isOperator" << endl;
                 cout << "the token is " << token << endl;
@@ -134,15 +130,19 @@ bool ExpressionManager::isOperator(char token) {
         return true;
     }
     else if (token == '-') {
+        cout << "the token was -" << endl;
         return true;
     }
     else if (token == '*') {
+        cout << "the token was *" << endl;
         return true;
     }
     else if (token == '/') {
+        cout << "the token was /" << endl;
         return true;
     }
     else if (token == '%') {
+        cout << "the token was %" << endl;
         return true;
     }
     else {
@@ -160,24 +160,40 @@ string ExpressionManager::postfixEvaluate(string postfixExpression){
 	vector <string> parsed = parseTokens(postfixExpression);
     cout << "this is the size of the vector: " << parsed.size();
     for (int i = 0; i < (parsed.size()); i++) {
-        //convert string to Cstring
-        charInt = convertThistoChar(parsed[i]);
-        cout << "CHANGE THIS FUNCTION"
-        cout << "parsedVector this time is: " << parsed[i] << endl;
-        cout << "our iterator is at: " << i << endl;
-        cout << "charInt this time is: " << charInt << endl;
 
-        if (isdigit(charInt[i])) {
-            cout << "this was a digit: " << charInt << endl;
-            cout << "inside the isdigit" << endl;
-            numToConvert = parsed[i]; //this is a string that we need to convert into an integer
+        string parsedString = parsed[i];
+        // Convert String to Char Array
+        int n = parsedString.length();
+        char char_array[n + 1];
+
+        strcpy(char_array,parsedString.c_str());
+
+// for (int i = 0; i < n; i++) {
+//     cout << char_array[i];
+// }
+// Convert String to Char Array
+
+//charInt = convertThistoChar(parsed[i]);
+// cout << "CHANGE THIS FUNCTION";
+// cout << "parsedVector this time is: " << parsed[i] << endl;
+// cout << "our iterator is at: " << i << endl;
+// cout << "charInt this time is: " << charInt << endl;
+        //Checks the first char of the token to see if its a number
+        if (isdigit(char_array[0])) {
+// cout << "this was a digit: " << charInt << endl;
+// cout << "inside the isdigit" << endl;
+
+            //Convert integer(string) into integer(int)
+            numToConvert = parsed[i];
             hasBeenConverted = convertToInt(numToConvert);
+            //Convert integer(string) into integer(int)
+
             intStack.push(hasBeenConverted);
-            cout << "just pushed hasBeenConverted" << endl;
-            cout << "we just pushed: " << intStack.top() << endl;
+// cout << "just pushed hasBeenConverted" << endl;
+// cout << "we just pushed: " << intStack.top() << endl;
         }
-        else if (isOperator(charInt)){ // if operator
-            cout << "back to isOperator in postfixEvaluate" << endl;
+
+        else if (isOperator(char_array[0])){ // if operator
             int answerInt;
             int rightSide;
             int leftSide;
@@ -190,6 +206,7 @@ string ExpressionManager::postfixEvaluate(string postfixExpression){
             else {
                 return "This was empty";
             }
+
             if (!intStack.empty()){
                 leftSide = intStack.top();
                 cout << "just got from leftside: " << leftSide << endl;
@@ -199,26 +216,25 @@ string ExpressionManager::postfixEvaluate(string postfixExpression){
                 return "This was empty";
             }
 
-
-
-            if (charInt == '+'){
+            if (char_array[0] == '+'){
                 cout << "inside charInt == '+'" << endl;
                 answerInt = leftSide + rightSide;
                 intStack.push(answerInt);
             }
-            else if (charInt == '-'){
+            else if (char_array[0] == '-'){
                 answerInt = leftSide - rightSide;
                 intStack.push(answerInt);
             }
-            else if (charInt == '*'){
+            else if (char_array[0] == '*'){
+                cout << "inside charInt == '*'" << endl;
                 answerInt = leftSide * rightSide;
                 intStack.push(answerInt);
             }
-            else if (charInt == '/'){
+            else if (char_array[0] == '/'){
                 answerInt = leftSide / rightSide;
                 intStack.push(answerInt);
             }
-            else if (charInt == '%'){
+            else if (char_array[0] == '%'){
                 answerInt = leftSide % rightSide;
                 intStack.push(answerInt);
             }

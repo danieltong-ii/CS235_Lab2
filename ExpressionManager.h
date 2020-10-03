@@ -34,7 +34,6 @@ public:
 	bool isRightParen(string token);
 	string convert(string token);
 	int convertToInt(string token);
-	char convertThistoChar(string token);
 	bool isOperator(char token);
 
 
