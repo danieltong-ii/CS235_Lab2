@@ -48,6 +48,7 @@ bool ExpressionManager::isRightParen(string token) {
 }
 
 string ExpressionManager::convert(string token) {
+    cout << "token to be flipped: " << token << endl;
     cout << "Inside convert" << endl;
     string converted;
 
@@ -63,6 +64,18 @@ string ExpressionManager::convert(string token) {
         converted = "}";
 		return converted;
 	}
+    else if (token == "]") {
+        converted = "[";
+        return converted;
+    }
+    else if (token == ")") {
+        converted = "(";
+        return converted;
+    }
+    else if (token == "}") {
+        converted = "{";
+        return converted;
+    }
     return converted;
 }
 
@@ -139,14 +152,14 @@ string ExpressionManager::postfixToInfix(string postfixExpression){
                     stackC.pop();
             }
             else {
-                return "error";
+                return "invalid";
             }
             if (!stackC.empty()){
                 leftSide = stackC.top();
                     stackC.pop();
             }
             else {
-                return "error";
+                return "invalid";
             }
         //now we need the operator placed in between
 
@@ -176,7 +189,7 @@ string ExpressionManager::postfixToInfix(string postfixExpression){
                 stackC.push(S_IntwOperator);
             }
             else {
-                return "error";
+                return "invalid";
             }
         }
     }
@@ -185,7 +198,7 @@ string ExpressionManager::postfixToInfix(string postfixExpression){
             finalExpression = stackC.top();
         }
         else {
-            return "error";
+            return "invalid";
         }
 	return finalExpression;
 }
@@ -198,8 +211,6 @@ int ExpressionManager::convertToInt(string token) {
 }
 
 bool ExpressionManager::isOperator(char token) {
-                cout << "inside the isOperator" << endl;
-                cout << "the token is " << token << endl;
     if (token == '+') {
         cout << "the token was +" << endl;
         return true;
@@ -218,6 +229,30 @@ bool ExpressionManager::isOperator(char token) {
     }
     else if (token == '%') {
         cout << "the token was %" << endl;
+        return true;
+    }
+    else if (token == '(') {
+        cout << "the token was (" << endl;
+        return true;
+    }
+    else if (token == '{') {
+        cout << "the token was {" << endl;
+        return true;
+    }
+    else if (token == '[') {
+        cout << "the token was [" << endl;
+        return true;
+    }
+    else if (token == ')') {
+        cout << "the token was )" << endl;
+        return true;
+    }
+    else if (token == '}') {
+        cout << "the token was }" << endl;
+        return true;
+    }
+    else if (token == ']') {
+        cout << "the token was ]" << endl;
         return true;
     }
     else {
@@ -273,6 +308,9 @@ string ExpressionManager::postfixEvaluate(string postfixExpression){
             int rightSide;
             int leftSide;
 
+            if (intStack.size() < 2) {
+                return "invalid";
+            }
             if (!intStack.empty()){
                 rightSide = intStack.top();
                 cout << "just got from rightside: " << rightSide;
@@ -306,8 +344,13 @@ string ExpressionManager::postfixEvaluate(string postfixExpression){
                 intStack.push(answerInt);
             }
             else if (char_array[0] == '/'){
-                answerInt = leftSide / rightSide;
-                intStack.push(answerInt);
+                if (rightSide == 0) {
+                    return "invalid";
+                }
+                else {
+                    answerInt = leftSide / rightSide;
+                    intStack.push(answerInt);
+                }
             }
             else if (char_array[0] == '%'){
                 answerInt = leftSide % rightSide;
@@ -315,7 +358,7 @@ string ExpressionManager::postfixEvaluate(string postfixExpression){
             }
         }
         else {
-            cout << "Error" << endl;
+            cout << "error" << endl;
         }
     }
 
@@ -341,7 +384,166 @@ cout << "test 4 " << endl;
 	return finalizedString;
 }
 
+
+int ExpressionManager::precedence(string myoperator) {
+    int prec;
+    cout << "inside precedence function" << endl;
+    if ((myoperator == ")") || (myoperator == "]") || (myoperator == "}")) {
+        cout << "the operator is " << myoperator << endl;
+        prec = 3;
+        cout << "precedence is 3" << endl;
+        return prec;
+    }
+    else if ((myoperator == "*") || (myoperator == "/") || (myoperator == "%")) {
+        cout << "the operator is " << myoperator << endl;
+        prec = 2;
+        cout << "precedence is 2" << endl;
+        return prec;
+    }
+    else if ((myoperator == "+") || (myoperator == "-")) {
+        cout << "the operator is " << myoperator << endl;
+        prec = 1;
+
+        cout << "precedence is 1" << endl;
+        return prec;
+    }
+    else if ((myoperator == "(") || (myoperator == "[") || (myoperator == "{")) {
+        cout << "the operator is " << myoperator << endl;
+        prec = 0;
+        cout << "precedence is 0" << endl;
+        return prec;
+    }
+    else {
+        cout << "the operator is " << myoperator << endl;
+        cout << "precedence is 404" << endl;
+        prec = 404;
+        return prec;
+    }
+    return 0;
+}
+
+
 string ExpressionManager::infixToPostfix(string infixExpression){
+    vector<string> tokens = parseTokens(infixExpression);
+    string finalOutput = "";
+    stack <string>stackOfOperators;
+
+    for (int i = 0; i < tokens.size(); i++) {
+        string toConvert = tokens[i];
+        int n = toConvert.length();
+        char char_array[n+1];
+        strcpy(char_array,toConvert.c_str());
+        cout << "The token is currently: " << tokens[i] << endl << endl;
+
+        if (isdigit(char_array[0])) {
+            // cout << "inside isdigit" << endl;
+            finalOutput = finalOutput + tokens[i] + " ";
+            cout << "the token was a digit: " << tokens[i] << endl << "the string is now: " << finalOutput << endl;
+        }
+        else if (isOperator(char_array[0])) {
+            cout << "inside isOperator" << endl;
+            string opToBeSorted = tokens[i];
+            cout << "operator to be sorted: " << opToBeSorted << endl;
+        // cout << "going into precedence function" << endl << endl;
+            int operatorPrecedence = precedence(opToBeSorted);
+
+        // cout << "we have left the precedence function" << endl;
+            if (operatorPrecedence == 3) { //Closing parentheses
+                while (!(convert(stackOfOperators.top()) == tokens[i])){
+
+                    if (stackOfOperators.size() > 1){
+                        finalOutput = finalOutput + stackOfOperators.top() + " ";
+                        stackOfOperators.pop();
+                        // cout << "break 5" << endl;
+                        cout << "the string is now: " << finalOutput << endl;
+                        cout << "stack of operator size: " << stackOfOperators.size() << endl;
+                        cout << "current top of stack:" << stackOfOperators.top() << endl;
+                        cout << "current token to evaluate:" << tokens[i];
+                    }
+                    else {
+                        finalOutput = finalOutput + stackOfOperators.top() + " ";
+                        stackOfOperators.pop();
+                        return "FALSE";
+                    }
+                }
+                if (convert(stackOfOperators.top()) == tokens[i]) {
+                    stackOfOperators.pop();
+                }
+                else {
+                    cout << "what the heck?" << endl;
+                }
+            }
+            else if ((stackOfOperators.empty()) || isOpeningParen(stackOfOperators.top()) || isOpeningParen(tokens[i])) {
+                //cout << "top of stack is open paren" << isOpeningParen(stackOfOperators.top()) << endl;
+                cout << "operator on hand is open paren" << isOpeningParen(tokens[i]) << endl;
+                cout << "Low precendence" << endl;
+                stackOfOperators.push(tokens[i]);
+                cout << "just pushed tokens" << endl;
+            }
+            else {
+
+                if (!stackOfOperators.empty()) {
+                    cout << "the current top of stack is: " << stackOfOperators.top();
+                }
+                cout << " The current token is actually: " <<  tokens[i] << endl;
+                while (precedence(tokens[i]) <= precedence(stackOfOperators.top())) {
+                    cout << "the token on hand is lower level than the top of the stack" << endl;
+
+                    cout << "we are right before the stackOfOperators.size() function " << endl;
+                    if (stackOfOperators.size() > 0) {
+                    cout << "we are in the stackOfOperators.size() function " << endl;
+                        finalOutput = finalOutput + stackOfOperators.top() + " ";
+                        stackOfOperators.pop();
+                        cout << "the string is now: " << finalOutput << endl;
+                    }
+                    // If the stack is empty, then BREAK and leave;
+                    if (stackOfOperators.empty()) {
+                        break;
+                    }
+                    cout << "just to confirm, size of stack: " << stackOfOperators.size() << endl;
+                }
+
+                // if (stackOfOperators.size() == 0) {
+                //     cout << "stack is empty" << endl;
+                //     stackOfOperators.push(tokens[i]);
+                // }
+                stackOfOperators.push(tokens[i]);
+                cout << "just pushed the token: " << tokens[i] << endl;
+                //else if ((precedence(tokens[i]) > precedence(stackOfOperators.top()))) {
+                }
+            }
+    }
+    cout << "we made it past the for loop" << endl;
+    while (!stackOfOperators.empty()) {
+        if (stackOfOperators.size() > 1) {
+            finalOutput = finalOutput + stackOfOperators.top() + " ";
+            stackOfOperators.pop();
+            cout << "the string is now: " << finalOutput << endl;
+        }
+        else {
+            finalOutput = finalOutput + stackOfOperators.top();
+            stackOfOperators.pop();
+        }
+    }
+
+	postfixEvaluate(finalOutput);
+
+
 	cout << "infixToPostfix: " << infixExpression << endl;
-	return "REPLACE";
+	return finalOutput;
+}
+
+bool ExpressionManager::isOpeningParen (string token) {
+    if (token == "(") {
+        return true;
+    }
+    else if (token == "{") {
+        return true;
+    }
+    else if (token == "[") {
+        return true;
+    }
+    else {
+        return false;
+    }
 }

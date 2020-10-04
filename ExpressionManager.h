@@ -35,6 +35,8 @@ public:
 	string convert(string token);
 	int convertToInt(string token);
 	bool isOperator(char token);
+	int precedence(string myoperator);
+	bool isOpeningParen (string token);
 
 
 
