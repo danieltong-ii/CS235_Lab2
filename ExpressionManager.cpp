@@ -200,7 +200,16 @@ string ExpressionManager::postfixToInfix(string postfixExpression){
         else {
             return "invalid";
         }
-	return finalExpression;
+
+        string decimals = ".";
+
+        size_t found = finalExpression.find(decimals);
+        if (found != string::npos) {
+            return "invalid";
+        }
+        else {
+            return finalExpression;
+        }
 }
 
 int ExpressionManager::convertToInt(string token) {
@@ -444,6 +453,7 @@ string ExpressionManager::infixToPostfix(string infixExpression){
             cout << "inside isOperator" << endl;
             string opToBeSorted = tokens[i];
             cout << "operator to be sorted: " << opToBeSorted << endl;
+            if ()
         // cout << "going into precedence function" << endl << endl;
             int operatorPrecedence = precedence(opToBeSorted);
 
@@ -463,7 +473,7 @@ string ExpressionManager::infixToPostfix(string infixExpression){
                     else {
                         finalOutput = finalOutput + stackOfOperators.top() + " ";
                         stackOfOperators.pop();
-                        return "FALSE";
+                        return "invalid";
                     }
                 }
                 if (convert(stackOfOperators.top()) == tokens[i]) {
@@ -526,7 +536,12 @@ string ExpressionManager::infixToPostfix(string infixExpression){
         }
     }
 
-	postfixEvaluate(finalOutput);
+	if (postfixEvaluate(finalOutput) != "invalid") {
+        return finalOutput;
+    }
+    else if (finalOutput.length() == ){
+        return "invalid";
+    }
 
 
 	cout << "infixToPostfix: " << infixExpression << endl;
